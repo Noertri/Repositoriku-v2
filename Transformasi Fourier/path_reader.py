@@ -2,12 +2,17 @@ import Fourier
 import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
+import math
+import json
 from matplotlib.animation import FuncAnimation
 from time import perf_counter
-from kupu2_path import points_list
 
 
 #Membuka file yg berisi titik2 koordinat gambar
+with open("lumba2_path.json", "r") as fin:
+    points_list = json.load(fin)
+    fin.close()
+
 p = len(points_list)
 ttk = [points_list[i] for i in range(0, p, 2)]
 ttk.append(ttk[0])
@@ -16,10 +21,8 @@ points = np.array(ttk, dtype=np.float64)
 
 (m, n) = points.shape
 
-#Merotasi koordinat gambar terhadap sumbu x
 for i in range(m):
-    points[i, 0] = 1.*points[i, 0]
-    points[i, 1] = -1.*points[i, 1]
+    points[i, 1] = -1*points[i, 1]
 
 #Menghitung transformasi fourier dari titik2 koordinat
 fhats = Fourier.dft2dim(points)
@@ -56,5 +59,5 @@ def animate(f, limx=[0., 0.], limy=[0., 0.]):
 
 if __name__ == '__main__':
     anim = FuncAnimation(fig1, animate, frames=m, repeat=False, interval=1, fargs=([-100, 100], [-100, 100]))
-    # anim.save("kupu2_fourier.gif", writer='pillow', fps=60)
-    # plt.close(fig1)
+    anim.save("lumba2_fourier.mp4", writer="ffmpeg", fps=30)
+    print("Selesai!!!!!")

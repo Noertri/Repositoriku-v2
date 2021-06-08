@@ -2,6 +2,7 @@ import re
 import xml.etree.ElementTree as ET
 import copy
 import numpy as np
+import json
 
 """Modul untuk mengkonversi d attribute di file svg ke koordinat kartesius x, y"""
 
@@ -30,8 +31,8 @@ class GetPathAttribute:
 
 class CommandToPath:
 
-    def __init__(self, dattrib):
-        self.dattrib = dattrib
+    def __init__(self, attrib):
+        self.dattrib = copy.deepcopy(attrib["d"])
 
     def xyList(self):
         p0 = []
@@ -337,18 +338,26 @@ class CommandToPath:
         return points
 
 
-def simpanXYList(fname, xylist=[]):
+def simpanXYList(name=""):
+    attrib = GetPathAttribute(name)
+    baris = attrib.pathAttribKV()
+    command = CommandToPath(baris)
+    lines = command.xyList()
 
+    names = name.split(".")
+    fname = names[0] + "_path" + ".json"
     with open(fname, 'w') as fo:
-        fo.write("Points_list = " + str(xylist))
-
+        json.dump(lines, fo, indent=4)
+        print("Done.......!!!!!")
         fo.close()
 
 
-attrib = GetPathAttribute("kupu2.svg")
-baris = attrib.pathAttribKV()
-input("Tekan Enter atau tobol lainnya!!!")
-command = CommandToPath(baris['d'])
-lines = command.xyList()
-input("Tekan Enter atau tobol lainnya!!!")
-simpanXYList("kupu2_path.py", lines)
+def convertToXYcor(name=""):
+    attrib = GetPathAttribute(name)
+    baris = attrib.pathAttribKV()
+    command = CommandToPath(baris)
+    lines = command.xyList()
+    return lines
+
+
+simpanXYList("lumba2.svg")
